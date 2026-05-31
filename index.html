@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BreatheSafe - Air Quality Monitor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+      <div class="logo">
+        <div class="logo-icon"><i class="fas fa-wind"></i></div>
+        <span>BreatheSafe</span>
+      </div>
+      <div class="nav-links">
+        <a href="#">Air Quality</a>
+        <a href="#">Monitors</a>
+        <a href="#">About</a>
+      </div>
+      <div class="nav-actions">
+        <button class="btn-locate" id="geoBtn" title="Use my location">
+          <i class="fas fa-location-crosshairs"></i> My Location
+        </button>
+        <button class="btn-theme" id="themeBtn" title="Toggle theme">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+      <button class="hamburger" id="hamburger"><i class="fas fa-bars"></i></button>
+    </nav>
+
+    <!-- MOBILE NAV -->
+    <div class="mobile-nav" id="mobileNav">
+      <a href="#">Air Quality</a>
+      <a href="#">Monitors</a>
+      <a href="#">About</a>
+    </div>
+
+    <div class="container">
+
+      <!-- LEFT PANEL -->
+      <aside class="left-panel">
+        <div class="hero-text">
+          <h1>Air<br /><span class="accent">Quality</span><br />Index</h1>
+          <div class="meta-row">
+            <span id="datetime"></span>
+            <span class="dot">·</span>
+            <span id="location">Loading...</span>
+          </div>
+        </div>
+
+        <!-- SEARCH -->
+        <div class="search-wrap">
+          <div class="search-box">
+            <i class="fas fa-magnifying-glass"></i>
+            <input type="text" id="citySearch" placeholder="Search any city..." autocomplete="off" />
+            <button id="searchButton"><i class="fas fa-arrow-right"></i></button>
+          </div>
+          <!-- Recent searches -->
+          <div class="recent-searches" id="recentSearches"></div>
+        </div>
+
+        <!-- ERROR MESSAGE -->
+        <div class="error-banner" id="errorBanner">
+          <i class="fas fa-circle-exclamation"></i>
+          <span id="errorText">City not found. Try again.</span>
+          <button onclick="document.getElementById('errorBanner').style.display='none'"><i class="fas fa-xmark"></i></button>
+        </div>
+
+        <!-- MAIN AQI CARD -->
+        <div class="card main-card">
+          <div class="skeleton-wrap" id="skeletonMain">
+            <div class="skeleton sk-sm"></div>
+            <div class="skeleton sk-lg"></div>
+            <div class="skeleton sk-sm"></div>
+          </div>
+          <div class="card-content" id="mainContent">
+            <div class="card-label">Current AQI</div>
+            <!-- SOURCE + TIMESTAMP -->
+            <div class="data-meta" id="dataMeta">
+              <span class="data-source"><i class="fas fa-database"></i> <span id="dataSource">—</span></span>
+              <span class="data-dot">·</span>
+              <span class="data-updated"><i class="fas fa-clock"></i> Updated <span id="dataUpdated">—</span></span>
+            </div>
+            <div class="aqi-gauge-wrap">
+              <canvas id="gaugeCanvas" width="220" height="130"></canvas>
+              <div class="aqi-center">
+                <div class="aqi-number" id="mainAqi">—</div>
+                <div class="aqi-status" id="aqiStatus">—</div>
+              </div>
+            </div>
+            <div class="info-chips">
+              <div class="chip">
+                <span class="chip-label">Dominant Pollutant</span>
+                <span class="chip-val" id="pollutant">—</span>
+              </div>
+              <div class="chip">
+                <span class="chip-label">Health Risk</span>
+                <span class="chip-val" id="risk">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HEALTH ADVICE CARD -->
+        <div class="card advice-card" id="adviceCard">
+          <div class="card-label"><i class="fas fa-heart-pulse"></i> Health Advice</div>
+          <p id="adviceText">Search a city to get personalised health advice.</p>
+          <div class="advice-tags" id="adviceTags"></div>
+        </div>
+      </aside>
+
+      <!-- RIGHT PANEL -->
+      <main class="right-panel">
+
+        <!-- TOP ROW: Pollutant breakdown -->
+        <div class="section-label-row">
+          <div class="section-label">Pollutant Breakdown</div>
+          <div class="section-source">Source: OpenWeatherMap · <span id="pollTimestamp">—</span></div>
+        </div>
+        <div class="pollutant-grid" id="pollutantGrid">
+          <div class="pollutant-card skeleton-card">
+            <div class="skeleton sk-sm"></div><div class="skeleton sk-md"></div>
+          </div>
+          <div class="pollutant-card skeleton-card">
+            <div class="skeleton sk-sm"></div><div class="skeleton sk-md"></div>
+          </div>
+          <div class="pollutant-card skeleton-card">
+            <div class="skeleton sk-sm"></div><div class="skeleton sk-md"></div>
+          </div>
+          <div class="pollutant-card skeleton-card">
+            <div class="skeleton sk-sm"></div><div class="skeleton sk-md"></div>
+          </div>
+          <div class="pollutant-card skeleton-card">
+            <div class="skeleton sk-sm"></div><div class="skeleton sk-md"></div>
+          </div>
+          <div class="pollutant-card skeleton-card">
+            <div class="skeleton sk-sm"></div><div class="skeleton sk-md"></div>
+          </div>
+        </div>
+
+        <!-- FORECAST CHART -->
+        <div class="section-label">48-Hour AQI Forecast</div>
+        <div class="card chart-card">
+          <canvas id="forecastChart"></canvas>
+          <div class="chart-empty" id="chartEmpty">
+            <i class="fas fa-chart-line"></i>
+            <p>Search a city to see the forecast</p>
+          </div>
+        </div>
+
+        <!-- GLOBE + RISK ROW -->
+        <div class="bottom-row">
+          <div class="card globe-card">
+            <div class="globe-container">
+              <div class="globe">
+                <div class="globe-ring r1"></div>
+                <div class="globe-ring r2"></div>
+                <div class="globe-ring r3"></div>
+                <div class="globe-glow"></div>
+                <div class="marker" id="marker">—</div>
+              </div>
+              <div class="aqi-badge" id="badge">—</div>
+              <div class="popup" id="popup">
+                <div class="popup-header">
+                  <span class="pulse-dot"></span>
+                  <span id="popupCity">—</span>
+                </div>
+                <div class="popup-aqi">
+                  <div class="popup-value" id="popupAqi">—</div>
+                  <div class="popup-status" id="popupStatus">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card risk-card">
+            <div class="card-label">Risk of Pollution</div>
+            <div class="risk-ring-wrap">
+              <canvas id="riskCanvas" width="160" height="160"></canvas>
+              <div class="risk-center">
+                <div class="risk-value" id="riskVal">—</div>
+                <div class="risk-label">Risk</div>
+              </div>
+            </div>
+            <p class="risk-desc" id="riskDesc">Search a city to see risk level.</p>
+            <div class="risk-indicators">
+              <span class="ri low">Low</span>
+              <span class="ri mid">Moderate</span>
+              <span class="ri high">High</span>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+
+    <!-- LOADING OVERLAY -->
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="loader-box">
+        <div class="loader-ring"></div>
+        <p>Fetching air data…</p>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
